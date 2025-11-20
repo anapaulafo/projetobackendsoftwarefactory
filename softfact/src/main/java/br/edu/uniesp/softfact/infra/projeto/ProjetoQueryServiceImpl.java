@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -68,9 +69,13 @@ public class ProjetoQueryServiceImpl implements ProjetoQueryService {
                 a.getCurso(),
                 a.getMatricula(),
                 a.getPeriodo(),
-                a.getStacks()
+                a.getStacks() == null ? Set.of() :
+                        a.getStacks().stream()
+                                .map(StackTecnologia::getId)
+                                .collect(Collectors.toSet())
         );
     }
+
 
     private StackResumo toStackResumo(StackTecnologia s) {
         return new StackResumo(

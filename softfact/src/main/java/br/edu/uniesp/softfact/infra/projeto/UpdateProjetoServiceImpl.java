@@ -1,6 +1,7 @@
 package br.edu.uniesp.softfact.infra.projeto;
 
 import br.edu.uniesp.softfact.application.projeto.ProjetoResponse;
+import br.edu.uniesp.softfact.domain.aluno.Aluno;
 import br.edu.uniesp.softfact.domain.projeto.Projeto;
 import br.edu.uniesp.softfact.domain.projeto.UpdateProjetoService;
 import br.edu.uniesp.softfact.infra.aluno.AlunoEntity;
@@ -26,18 +27,29 @@ public class UpdateProjetoServiceImpl implements UpdateProjetoService {
     private final StackTecRepository stackRepo;
     private final ProjetoEntityMapper mapper;
 
+
     @Override
     public ProjetoResponse criar(Projeto dto) {
         ProjetoEntity entity = mapper.toEntity(dto);
 
-        entity.setAlunos(buscarAlunos(dto.getAlunos()
-                .stream().map(AlunoEntity::getId).collect(Collectors.toSet())));
+        // IDs vêm do domínio (Aluno, Stack), NÃO das entidades
+        entity.setAlunos(buscarAlunos(
+                dto.getAlunos()
+                        .stream()
+                        .map(Aluno::getId)
+                        .collect(Collectors.toSet())
+        ));
 
-        entity.setStacks(buscarStacks(dto.getStacks()
-                .stream().map(StackTecnologia::getId).collect(Collectors.toSet())));
+        entity.setStacks(buscarStacks(
+                dto.getStacks()
+                        .stream()
+                        .map(s -> s.getId())
+                        .collect(Collectors.toSet())
+        ));
 
         return mapper.toResponse(repo.save(entity));
     }
+
 
     @Override
     public ProjetoResponse atualizar(Long id, Projeto dto) {
@@ -48,15 +60,22 @@ public class UpdateProjetoServiceImpl implements UpdateProjetoService {
         existente.setDescricao(dto.getDescricao());
 
         existente.setAlunos(buscarAlunos(
-                dto.getAlunos().stream().map(Aluno::getId).collect(Collectors.toSet())
+                dto.getAlunos()
+                        .stream()
+                        .map(Aluno::getId)
+                        .collect(Collectors.toSet())
         ));
 
         existente.setStacks(buscarStacks(
-                dto.getStacks().stream().map(StackTecnologia::getId).collect(Collectors.toSet())
+                dto.getStacks()
+                        .stream()
+                        .map(s -> s.getId())
+                        .collect(Collectors.toSet())
         ));
 
         return mapper.toResponse(existente);
     }
+
 
     @Override
     public ProjetoResponse criar(Projeto domain, Set<Long> alunosIds, Set<Long> stacksIds) {
@@ -67,6 +86,7 @@ public class UpdateProjetoServiceImpl implements UpdateProjetoService {
     public ProjetoResponse atualizar(Long id, Projeto domain, Set<Long> alunosIds, Set<Long> stacksIds) {
         return null;
     }
+
 
     @Override
     public void excluir(Long id) {
@@ -80,6 +100,7 @@ public class UpdateProjetoServiceImpl implements UpdateProjetoService {
     public Object buscarDomainPorId(Long id) {
         return null;
     }
+
 
     private Set<AlunoEntity> buscarAlunos(Set<Long> ids) {
         if (ids == null || ids.isEmpty()) return Set.of();

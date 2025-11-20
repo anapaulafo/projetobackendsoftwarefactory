@@ -5,18 +5,14 @@ import br.edu.uniesp.softfact.domain.aluno.Aluno;
 import br.edu.uniesp.softfact.infra.aluno.AlunoEntity;
 import br.edu.uniesp.softfact.shared.enums.Curso;
 import br.edu.uniesp.softfact.shared.enums.Periodo;
-import br.edu.uniesp.softfact.zo.old.certificado.Certificado;
-import br.edu.uniesp.softfact.zo.old.stack.StackTecnologia;
-import br.edu.uniesp.softfact.zo.old.stack.dto.StackResumo;
-import java.util.LinkedHashSet;
 import java.util.Set;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-11-20T09:08:00-0300",
-    comments = "version: 1.6.3, compiler: javac, environment: Java 24.0.2 (Oracle Corporation)"
+    date = "2025-11-20T12:31:47-0300",
+    comments = "version: 1.6.3, compiler: javac, environment: Java 23.0.2 (Amazon.com Inc.)"
 )
 @Component
 public class AlunoEntityMapperImpl implements AlunoEntityMapper {
@@ -36,14 +32,6 @@ public class AlunoEntityMapperImpl implements AlunoEntityMapper {
         alunoEntity.curso( dto.getCurso() );
         alunoEntity.matricula( dto.getMatricula() );
         alunoEntity.periodo( dto.getPeriodo() );
-        Set<StackTecnologia> set = dto.getStacks();
-        if ( set != null ) {
-            alunoEntity.stacks( new LinkedHashSet<StackTecnologia>( set ) );
-        }
-        Set<Certificado> set1 = dto.getCertificados();
-        if ( set1 != null ) {
-            alunoEntity.certificados( new LinkedHashSet<Certificado>( set1 ) );
-        }
 
         return alunoEntity.build();
     }
@@ -54,6 +42,7 @@ public class AlunoEntityMapperImpl implements AlunoEntityMapper {
             return null;
         }
 
+        Set<Long> stacksIds = null;
         Long id = null;
         String nome = null;
         String email = null;
@@ -61,8 +50,8 @@ public class AlunoEntityMapperImpl implements AlunoEntityMapper {
         Curso curso = null;
         String matricula = null;
         Periodo periodo = null;
-        Set<StackResumo> stacks = null;
 
+        stacksIds = AlunoEntityMapper.mapStacksIds( entity.getStacks() );
         id = entity.getId();
         nome = entity.getNome();
         email = entity.getEmail();
@@ -70,41 +59,9 @@ public class AlunoEntityMapperImpl implements AlunoEntityMapper {
         curso = entity.getCurso();
         matricula = entity.getMatricula();
         periodo = entity.getPeriodo();
-        stacks = stackTecnologiaSetToStackResumoSet( entity.getStacks() );
 
-        AlunoResponse alunoResponse = new AlunoResponse( id, nome, email, telefone, curso, matricula, periodo, stacks );
+        AlunoResponse alunoResponse = new AlunoResponse( id, nome, email, telefone, curso, matricula, periodo, stacksIds );
 
         return alunoResponse;
-    }
-
-    protected StackResumo stackTecnologiaToStackResumo(StackTecnologia stackTecnologia) {
-        if ( stackTecnologia == null ) {
-            return null;
-        }
-
-        Long id = null;
-        String nome = null;
-        String categoria = null;
-
-        id = stackTecnologia.getId();
-        nome = stackTecnologia.getNome();
-        categoria = stackTecnologia.getCategoria();
-
-        StackResumo stackResumo = new StackResumo( id, nome, categoria );
-
-        return stackResumo;
-    }
-
-    protected Set<StackResumo> stackTecnologiaSetToStackResumoSet(Set<StackTecnologia> set) {
-        if ( set == null ) {
-            return null;
-        }
-
-        Set<StackResumo> set1 = LinkedHashSet.newLinkedHashSet( set.size() );
-        for ( StackTecnologia stackTecnologia : set ) {
-            set1.add( stackTecnologiaToStackResumo( stackTecnologia ) );
-        }
-
-        return set1;
     }
 }

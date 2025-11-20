@@ -2,6 +2,7 @@ package br.edu.uniesp.softfact.infra.aluno;
 
 import br.edu.uniesp.softfact.application.aluno.AlunoResponse;
 import br.edu.uniesp.softfact.domain.aluno.AlunoQueryService;
+import br.edu.uniesp.softfact.zo.old.stack.StackTecnologia;
 import br.edu.uniesp.softfact.zo.old.stack.dto.StackResumo;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,7 +26,7 @@ public class AlunoQueryServiceImpl implements AlunoQueryService {
     @Transactional(readOnly = true)
     @Override
     public AlunoResponse buscarPorId(Long id) {
-        return repo.findById(id).map(this::toResponse)
+        return repo.findById(id).map(this::toAlunoResponse)
                 .orElseThrow(() -> new EntityNotFoundException("Aluno não encontrado: " + id));
     }
 
@@ -46,10 +48,10 @@ public class AlunoQueryServiceImpl implements AlunoQueryService {
             probe.setMatricula(termo);
             page = repo.findAll(Example.of(probe, matcher), pageable);
         }
-        return page.map(this::toResponse);
+        return page.map(this::toAlunoResponse);
     }
 
-    private AlunoResponse toResponse(AlunoEntity a) {
+    private AlunoResponse toAlunoResponse(AlunoEntity a) {
         return new AlunoResponse(
                 a.getId(),
                 a.getNome(),
@@ -58,9 +60,11 @@ public class AlunoQueryServiceImpl implements AlunoQueryService {
                 a.getCurso(),
                 a.getMatricula(),
                 a.getPeriodo(),
-                a.getStacks().stream()
-                        .map(s -> new StackResumo(s.getId(), s.getNome(), s.getCategoria()))
-                        .collect(Collectors.toSet())
+                a.getStacks() == null ? Set.of() :
+                        a.getStacks().stream()
+                                .map(StackTecnologia::getId) // <- converte para Set<Long>
+                                .collect(Collectors.toSet())
         );
     }
+
 }

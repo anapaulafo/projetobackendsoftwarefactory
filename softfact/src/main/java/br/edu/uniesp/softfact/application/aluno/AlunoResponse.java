@@ -13,5 +13,6 @@ public record AlunoResponse(
         Curso curso,
         String matricula,
         Periodo periodo,
-        Set<br.edu.uniesp.softfact.zo.old.stack.StackTecnologia> stacksIds
+        Set<Long> stacksIds
+
 ) {}
