@@ -34,15 +34,20 @@ public class UpdateAlunoServiceImpl implements UpdateAlunoService {
 
     @Override
     public AlunoResponse atualizar(Long id, Aluno dto) {
+
         AlunoEntity existente = repo.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Aluno não encontrado: " + id));
 
-        if (!existente.getEmail().equalsIgnoreCase(dto.getEmail()) && repo.existsByEmail(dto.getEmail())) {
+        if (!existente.getEmail().equalsIgnoreCase(dto.getEmail())
+                && repo.existsByEmail(dto.getEmail())) {
             throw new DataIntegrityViolationException("E-mail já cadastrado.");
         }
-        if (!existente.getMatricula().equalsIgnoreCase(dto.getMatricula()) && repo.existsByMatricula(dto.getMatricula())) {
+
+        if (!existente.getMatricula().equalsIgnoreCase(dto.getMatricula())
+                && repo.existsByMatricula(dto.getMatricula())) {
             throw new DataIntegrityViolationException("Matrícula já cadastrada.");
         }
+
 
         existente.setNome(dto.getNome());
         existente.setEmail(dto.getEmail());
@@ -50,10 +55,14 @@ public class UpdateAlunoServiceImpl implements UpdateAlunoService {
         existente.setCurso(dto.getCurso());
         existente.setMatricula(dto.getMatricula());
         existente.setPeriodo(dto.getPeriodo());
-        existente.setStacks(buscarStacks(dto.getStacks().stream().map(StackTecnologia::getId).collect(Collectors.toSet())));
+
+
+        existente.setStacks(buscarStacks(dto.getStacksIds()));
+
 
         return entityMapper.toResponse(existente);
     }
+
 
     @Override
     public void excluir(Long id) {

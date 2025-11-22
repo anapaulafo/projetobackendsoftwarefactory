@@ -24,6 +24,8 @@ public class Aluno {
     private Curso curso;
     private String matricula;
     private Periodo periodo;
-    private Set<StackTecnologia> stacks = new HashSet<>();
     private Set<Certificado> certificados = new HashSet<>();
+    public Set<Long> getStacksIds() {
+        return Set.of();
+    }
 }

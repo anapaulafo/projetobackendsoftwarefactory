@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -29,63 +30,57 @@ public class UpdateProjetoServiceImpl implements UpdateProjetoService {
 
 
     @Override
-    public ProjetoResponse criar(Projeto dto) {
-        ProjetoEntity entity = mapper.toEntity(dto);
+    public ProjetoResponse criar(Projeto domain, Set<Long> alunosIds, Set<Long> stacksIds) {
 
-        // IDs vêm do domínio (Aluno, Stack), NÃO das entidades
-        entity.setAlunos(buscarAlunos(
-                dto.getAlunos()
-                        .stream()
-                        .map(Aluno::getId)
-                        .collect(Collectors.toSet())
-        ));
+        ProjetoEntity entity = mapper.toEntity(domain);
 
-        entity.setStacks(buscarStacks(
-                dto.getStacks()
-                        .stream()
-                        .map(s -> s.getId())
-                        .collect(Collectors.toSet())
-        ));
+        // relacionamentos
+        entity.setAlunos(buscarAlunos(alunosIds));
+        entity.setStacks(buscarStacks(stacksIds));
 
-        return mapper.toResponse(repo.save(entity));
+        entity = repo.save(entity);
+
+        return mapper.toResponse(entity);
     }
 
-
     @Override
-    public ProjetoResponse atualizar(Long id, Projeto dto) {
+    public ProjetoResponse atualizar(Long id, Projeto domain, Set<Long> alunosIds, Set<Long> stacksIds) {
+
         ProjetoEntity existente = repo.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Projeto não encontrado: " + id));
 
-        existente.setNome(dto.getNome());
-        existente.setDescricao(dto.getDescricao());
-
-        existente.setAlunos(buscarAlunos(
-                dto.getAlunos()
-                        .stream()
-                        .map(Aluno::getId)
-                        .collect(Collectors.toSet())
-        ));
-
-        existente.setStacks(buscarStacks(
-                dto.getStacks()
-                        .stream()
-                        .map(s -> s.getId())
-                        .collect(Collectors.toSet())
-        ));
+        existente.setNome(domain.getNome());
+        existente.setDescricao(domain.getDescricao());
+        existente.setAlunos(new HashSet<>(buscarAlunos(alunosIds)));
+        existente.setStacks(new HashSet<>(buscarStacks(stacksIds)));
 
         return mapper.toResponse(existente);
     }
 
 
     @Override
-    public ProjetoResponse criar(Projeto domain, Set<Long> alunosIds, Set<Long> stacksIds) {
-        return null;
+    public Projeto buscarDomainPorId(Long id) {
+        ProjetoEntity entity = repo.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Projeto não encontrado: " + id));
+
+        return mapper.toDomain(entity);
+    }
+
+
+    @Override
+    public ProjetoResponse criar(Projeto dto) {
+        throw new UnsupportedOperationException(
+                "Este método não deve ser usado. Utilize criar(domain, alunosIds, stacksIds)."
+        );
     }
 
     @Override
-    public ProjetoResponse atualizar(Long id, Projeto domain, Set<Long> alunosIds, Set<Long> stacksIds) {
-        return null;
+    public ProjetoResponse atualizar(Long id, Projeto dto) {
+        throw new UnsupportedOperationException(
+                "Este método não deve ser usado. Utilize atualizar(id, domain, alunosIds, stacksIds)."
+        );
     }
+
 
 
     @Override
@@ -96,10 +91,6 @@ public class UpdateProjetoServiceImpl implements UpdateProjetoService {
         repo.deleteById(id);
     }
 
-    @Override
-    public Object buscarDomainPorId(Long id) {
-        return null;
-    }
 
 
     private Set<AlunoEntity> buscarAlunos(Set<Long> ids) {

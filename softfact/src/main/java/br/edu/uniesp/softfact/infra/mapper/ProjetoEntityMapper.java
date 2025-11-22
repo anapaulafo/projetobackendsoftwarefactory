@@ -11,4 +11,6 @@ public interface ProjetoEntityMapper {
     ProjetoEntity toEntity(Projeto dto);
 
     ProjetoResponse toResponse(ProjetoEntity entity);
+
+    Projeto toDomain(ProjetoEntity entity);
 }
