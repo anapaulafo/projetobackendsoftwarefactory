@@ -10,20 +10,20 @@
 ###### Prints do CRUD de Aluno e Projeto (via Postman)
 ## CRUD ALUNO
 #### POST ALUNO
-![post aluno](./../prints/post_aluno.png)
+![post aluno](prints/post_aluno.png)
 #### GET ALUNO BY ID
-![get aluno](./../prints/get_aluno.png)
+![get aluno](prints/get_aluno.png)
 #### PUT ALUNO
-![put aluno](./../prints/put_aluno.png)
+![put aluno](prints/put_aluno.png)
 #### DELETE ALUNO
-![delete aluno](./../prints/delete_aluno.png)
+![delete aluno](prints/delete_aluno.png)
 
 ## CRUD PROJETO
 #### POST PROJETO
-![post projeto](./../prints/post_projeto.png)
+![post projeto](prints/post_projeto.png)
 #### GET PROJETO BY ID
-![get projeto](./../prints/get_projeto.png)
+![get projeto](prints/get_projeto.png)
 #### PUT PROJETO
-![put projeto](./../prints/put_projeto.png)
+![put projeto](prints/put_projeto.png)
 #### DELETE PROJETO
-![delete projeto](./../prints/delete_projeto.png)
+![delete projeto](prints/delete_projeto.png)
